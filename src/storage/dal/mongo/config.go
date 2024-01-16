@@ -54,6 +54,7 @@ type Config struct {
 	Mechanism     string
 	MaxOpenConns  uint64
 	MaxIdleConns  uint64
+	ClusterMode   string
 	RsName        string
 	SocketTimeout int
 }
@@ -81,6 +82,7 @@ func (c Config) GetMongoConf() local.MongoConf {
 		MaxOpenConns:  c.MaxOpenConns,
 		MaxIdleConns:  c.MaxIdleConns,
 		URI:           c.BuildURI(),
+		ClusterMode:   c.ClusterMode,
 		RsName:        c.RsName,
 		SocketTimeout: c.SocketTimeout,
 	}
@@ -92,6 +94,7 @@ func (c Config) GetMongoClient() (db dal.RDB, err error) {
 		MaxOpenConns:  c.MaxOpenConns,
 		MaxIdleConns:  c.MaxIdleConns,
 		URI:           c.BuildURI(),
+		ClusterMode:   c.ClusterMode,
 		RsName:        c.RsName,
 		SocketTimeout: c.SocketTimeout,
 	}
