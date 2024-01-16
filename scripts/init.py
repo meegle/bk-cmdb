@@ -23,7 +23,7 @@ def generate_config_file(
         rd_server_v, rd_cafile_v, rd_certfile_v, rd_keyfile_v, rd_skipverify_v, rd_certpassword_v,
         db_name_v, redis_ip_v, redis_port_v,
         redis_pass_v, sentinel_pass_v, redis_certfile_v, redis_keyfile_v, redis_cafile_v, redis_skipverify_v,
-        mongo_ip_v, mongo_port_v, mongo_user_v, mongo_pass_v, mongo_certfile_v, mongo_keyfile_v, mongo_cafile_v, mongo_skipverify_v, rs_name, user_info,
+        mongo_ip_v, mongo_port_v, mongo_user_v, mongo_pass_v, mongo_certfile_v, mongo_keyfile_v, mongo_cafile_v, mongo_skipverify_v, cluster_mode, rs_name, user_info,
         cc_url_v, paas_url_v, full_text_search, es_url_v, es_user_v, es_pass_v,es_shard_num_v,es_replica_num_v,
         es_tls_cafile_v, es_tls_certfile_v, es_tls_keyfile_v, es_tls_skipverify_v, auth_address, auth_app_code,
         auth_app_secret, auth_enabled, auth_scheme, auth_sync_workers, auth_sync_interval_minutes, log_level, register_ip,
@@ -76,6 +76,7 @@ def generate_config_file(
         auth_sync_workers=auth_sync_workers,
         auth_sync_interval_minutes=auth_sync_interval_minutes,
         full_text_search=full_text_search,
+        cluster_mode=cluster_mode,
         rs_name=rs_name,
         user_info=user_info,
         enable_cryptor = enable_cryptor_v,
@@ -180,6 +181,7 @@ redis:
 #  maxOpenConns: 3000
 #  maxIdleConns: 100
 #  mechanism: SCRAM-SHA-1
+#  clusterMode: replica
 #  rsName: rs0
 
 # mongodb配置
@@ -192,6 +194,7 @@ mongodb:
   maxOpenConns: 3000
   maxIdleConns: 100
   mechanism: SCRAM-SHA-1
+  clusterMode: $cluster_mode
   rsName: $rs_name
   #mongo的socket连接的超时时间，以秒为单位，默认10s，最小5s，最大30s。
   socketTimeoutSeconds: 10
@@ -215,6 +218,7 @@ watch:
   maxOpenConns: 10
   maxIdleConns: 5
   mechanism: SCRAM-SHA-1
+  clusterMode: $cluster_mode
   rsName: $rs_name
   socketTimeoutSeconds: 10
   tls:
@@ -792,6 +796,7 @@ mongodb:
 #  maxOpenConns: 5
 #  maxIdleConns: 1
 #  mechanism: SCRAM-SHA-1
+#  clusterMode: replica
 #  rsName: rs0
 #redis:
 #  host: 127.0.0.1:6379
@@ -972,6 +977,7 @@ def main(argv):
     es_tls_skipverify = 'true'
     log_level = '3'
     register_ip = ''
+    cluster_mode = 'replica'
     rs_name = 'rs0'
     user_info = ''
     enable_cryptor = 'false'
@@ -1007,7 +1013,7 @@ def main(argv):
     arr = [
         "help", "discovery=", "database=", "redis_ip=", "redis_port=",
         "redis_pass=", "sentinel_pass=", "redis_certfile=", "redis_keyfile=", "redis_cafile=", "redis_skipverify=",
-        "mongo_ip=", "mongo_port=", "rs_name=",
+        "mongo_ip=", "mongo_port=", "cluster_mode=", "rs_name=",
         "mongo_user=", "mongo_pass=", "mongo_certfile=", "mongo_keyfile=", "mongo_cafile=", "mongo_skipverify=", "blueking_cmdb_url=", "user_info=",
         "blueking_paas_url=", "listen_port=",
         "es_url=", "es_user=", "es_pass=", "es_shard_num=","es_replica_num=",
@@ -1037,6 +1043,7 @@ def main(argv):
       --mongo_keyfile           <mongo_keyfile>           the mongo key file path
       --mongo_cafile            <mongo_cafile>            the mongo ca cert file path
       --mongo_skipverify        <mongo_skipverify>        the mongo skip verify
+      --cluster_mode            <cluster_mode>            the mongo cluster mode, default: replica
       --rs_name                 <rs_name>                 the mongo replica set name, default: rs0
       --blueking_cmdb_url       <blueking_cmdb_url>       the cmdb site url, eg: http://127.0.0.1:8088 or http://bk.tencent.com
       --blueking_paas_url       <blueking_paas_url>       the blueking paas url, eg: http://127.0.0.1:8088 or http://bk.tencent.com
@@ -1096,6 +1103,7 @@ def main(argv):
       --mongo_keyfile           ./mongo.key \\
       --mongo_cafile            ./mongo-ca.crt \\
       --mongo_skipverify        true \\
+      --cluster_mode            replica \\
       --rs_name                 rs0 \\
       --blueking_cmdb_url       http://127.0.0.1:8080/ \\
       --blueking_paas_url       http://paas.domain.com \\
@@ -1206,6 +1214,9 @@ def main(argv):
         elif opt in ("--mongo_skipverify",):
             mongo_skipverify = arg
             print('mongo_skipverify:', mongo_skipverify)
+        elif opt in ("--cluster_mode",):
+            cluster_mode = arg
+            print('cluster_mode:', cluster_mode)
         elif opt in ("--rs_name",):
             rs_name = arg
             print('rs_name:', rs_name)
@@ -1392,6 +1403,7 @@ def main(argv):
         mongo_keyfile_v=mongo_keyfile,
         mongo_cafile_v=mongo_cafile,
         mongo_skipverify_v=mongo_skipverify,
+        cluster_mode=cluster_mode,
         rs_name=rs_name,
         cc_url_v=cc_url,
         paas_url_v=paas_url,

@@ -16,6 +16,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go.mongodb.org/mongo-driver/mongo/readconcern"
+	"go.mongodb.org/mongo-driver/mongo/writeconcern"
 	"reflect"
 	"strconv"
 	"strings"
@@ -68,6 +70,7 @@ type MongoConf struct {
 	MaxOpenConns   uint64
 	MaxIdleConns   uint64
 	URI            string
+	ClusterMode    string
 	RsName         string
 	SocketTimeout  int
 	DisableInsert  bool
@@ -94,7 +97,6 @@ func NewMgo(config MongoConf, timeout time.Duration) (*Mongo, error) {
 		MinPoolSize:     &config.MaxIdleConns,
 		ConnectTimeout:  &timeout,
 		SocketTimeout:   &socketTimeout,
-		ReplicaSet:      &config.RsName,
 		RetryWrites:     &disableWriteRetry,
 		MaxConnIdleTime: &maxConnIdleTime,
 		AppName:         &appName,
@@ -105,6 +107,18 @@ func NewMgo(config MongoConf, timeout time.Duration) (*Mongo, error) {
 	}
 	if useTLS {
 		conOpt.TLSConfig = tlsConf
+	}
+
+	// 区分建连方式
+	if config.ClusterMode == "shard" { // 分片集群模式
+		// 读关注
+		conOpt.SetReadConcern(readconcern.Majority()) // 指定查询应返回实例的最新数据确认为 已写入集群中的大多数成员
+		// 写关注
+		wc := writeconcern.New(writeconcern.WMajority()) // 请求确认写操作传播到大多数mongod梳理
+		wc = wc.WithOptions(writeconcern.WTimeout(30 * time.Second))
+		conOpt.SetWriteConcern(wc)
+	} else { // 副本集模式
+		conOpt.ReplicaSet = &config.RsName
 	}
 
 	client, err := mongo.NewClient(options.Client().ApplyURI(config.URI), &conOpt)

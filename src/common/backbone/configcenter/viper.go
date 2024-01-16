@@ -318,14 +318,15 @@ func Mongo(prefix string) (mongo.Config, error) {
 	}
 
 	c := mongo.Config{
-		Address:   parser.getString(prefix + ".host"),
-		Port:      parser.getString(prefix + ".port"),
-		User:      parser.getString(prefix + ".usr"),
-		Password:  parser.getString(prefix + ".pwd"),
-		Database:  parser.getString(prefix + ".database"),
-		Mechanism: parser.getString(prefix + ".mechanism"),
-		RsName:    parser.getString(prefix + ".rsName"),
-		TLSConf:   &tlsClientConfig,
+		Address:     parser.getString(prefix + ".host"),
+		Port:        parser.getString(prefix + ".port"),
+		User:        parser.getString(prefix + ".usr"),
+		Password:    parser.getString(prefix + ".pwd"),
+		Database:    parser.getString(prefix + ".database"),
+		Mechanism:   parser.getString(prefix + ".mechanism"),
+		ClusterMode: parser.getString(prefix + ".clusterMode"),
+		RsName:      parser.getString(prefix + ".rsName"),
+		TLSConf:     &tlsClientConfig,
 	}
 
 	if c.RsName == "" {
