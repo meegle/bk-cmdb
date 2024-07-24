@@ -12,6 +12,7 @@ src/web*/cmdb_*
 
 .DS_Store
 .vscode
+.idea
 
 .pre-commit-config.yaml
 

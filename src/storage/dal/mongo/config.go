@@ -58,6 +58,7 @@ type Config struct {
 	RsName        string
 	SocketTimeout int
 	DisableInsert bool
+	Debug         bool
 }
 
 // BuildURI return mongo uri according to  https://docs.mongodb.com/manual/reference/connection-string/
@@ -87,6 +88,7 @@ func (c Config) GetMongoConf() local.MongoConf {
 		RsName:        c.RsName,
 		SocketTimeout: c.SocketTimeout,
 		DisableInsert: c.DisableInsert,
+		Debug:         c.Debug,
 	}
 }
 
@@ -99,6 +101,7 @@ func (c Config) GetMongoClient() (db dal.RDB, err error) {
 		ClusterMode:   c.ClusterMode,
 		RsName:        c.RsName,
 		SocketTimeout: c.SocketTimeout,
+		Debug:         c.Debug,
 	}
 	db, err = local.NewMgo(mongoConf, time.Minute)
 	if err != nil {
