@@ -1051,7 +1051,7 @@ const (
 	FieldTypeSingleLenChar int = 256
 
 	// FieldTypeLongLenChar the long char length limit
-	FieldTypeLongLenChar int = 2000
+	FieldTypeLongLenChar int = 65535 // 64KB(对应MySQL中的TEXT类型长度)
 
 	// FieldTypeUserLenChar the user char length limit
 	FieldTypeUserLenChar int = 2000
