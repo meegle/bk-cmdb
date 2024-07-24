@@ -183,6 +183,8 @@ redis:
 #  mechanism: SCRAM-SHA-1
 #  clusterMode: replica
 #  rsName: rs0
+#  socketTimeoutSeconds: 10
+#  debug: false
 
 # mongodb配置
 mongodb:
@@ -198,6 +200,7 @@ mongodb:
   rsName: $rs_name
   #mongo的socket连接的超时时间，以秒为单位，默认10s，最小5s，最大30s。
   socketTimeoutSeconds: 10
+  debug: false
   #TLS配置信息
   tls:
     #证书文件路径
@@ -208,7 +211,7 @@ mongodb:
     caFile: "$mongo_cafile"
     #是否跳过证书验证
     insecureSkipVerify: $mongo_skipverify
-  # mongodb事件监听存储事件链的mongodb配置
+# mongodb事件监听存储事件链的mongodb配置
 watch:
   host: $mongo_host
   port: $mongo_port
@@ -221,6 +224,7 @@ watch:
   clusterMode: $cluster_mode
   rsName: $rs_name
   socketTimeoutSeconds: 10
+  debug: false
   tls:
     certFile: "$mongo_certfile"
     keyFile: "$mongo_keyfile"
@@ -798,6 +802,7 @@ mongodb:
 #  mechanism: SCRAM-SHA-1
 #  clusterMode: replica
 #  rsName: rs0
+#  debug: false
 #redis:
 #  host: 127.0.0.1:6379
 #  pwd: 123456

@@ -16,8 +16,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"go.mongodb.org/mongo-driver/mongo/readconcern"
-	"go.mongodb.org/mongo-driver/mongo/writeconcern"
 	"reflect"
 	"strconv"
 	"strings"
@@ -38,9 +36,12 @@ import (
 
 	"github.com/tidwall/gjson"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/event"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readconcern"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"go.mongodb.org/mongo-driver/mongo/writeconcern"
 	"go.mongodb.org/mongo-driver/x/bsonx"
 	"go.mongodb.org/mongo-driver/x/mongo/driver/connstring"
 )
@@ -74,6 +75,7 @@ type MongoConf struct {
 	RsName         string
 	SocketTimeout  int
 	DisableInsert  bool
+	Debug          bool
 	TLS            *ssl.TLSClientConfig
 }
 
@@ -121,7 +123,27 @@ func NewMgo(config MongoConf, timeout time.Duration) (*Mongo, error) {
 		conOpt.ReplicaSet = &config.RsName
 	}
 
-	client, err := mongo.NewClient(options.Client().ApplyURI(config.URI), &conOpt)
+	clientOpt := options.Client().ApplyURI(config.URI)
+	if config.Debug {
+		// 打印查询日志
+		var logMonitor = event.CommandMonitor{
+			Started: func(ctx context.Context, startedEvent *event.CommandStartedEvent) {
+				blog.Infof("mongo reqId:%d start on db:%s cmd:%s sql:%+v", startedEvent.RequestID, startedEvent.DatabaseName,
+					startedEvent.CommandName, startedEvent.Command)
+			},
+			Succeeded: func(ctx context.Context, succeededEvent *event.CommandSucceededEvent) {
+				blog.Infof("mongo reqId:%d exec cmd:%s success duration %d ns", succeededEvent.RequestID,
+					succeededEvent.CommandName, succeededEvent.DurationNanos)
+			},
+			Failed: func(ctx context.Context, failedEvent *event.CommandFailedEvent) {
+				blog.Infof("mongo reqId:%d exec cmd:%s failed duration %d ns", failedEvent.RequestID,
+					failedEvent.CommandName, failedEvent.DurationNanos)
+			},
+		}
+		clientOpt.SetMonitor(&logMonitor)
+	}
+
+	client, err := mongo.NewClient(clientOpt, &conOpt)
 	if nil != err {
 		return nil, err
 	}

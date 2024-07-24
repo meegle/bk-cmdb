@@ -326,6 +326,7 @@ func Mongo(prefix string) (mongo.Config, error) {
 		Mechanism:   parser.getString(prefix + ".mechanism"),
 		ClusterMode: parser.getString(prefix + ".clusterMode"),
 		RsName:      parser.getString(prefix + ".rsName"),
+		Debug:       parser.getBool(prefix + ".debug"),
 		TLSConf:     &tlsClientConfig,
 	}
 

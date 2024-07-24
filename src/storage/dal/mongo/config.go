@@ -59,6 +59,7 @@ type Config struct {
 	RsName        string
 	SocketTimeout int
 	DisableInsert bool
+	Debug         bool
 	TLSConf       *ssl.TLSClientConfig
 }
 
@@ -89,6 +90,7 @@ func (c Config) GetMongoConf() local.MongoConf {
 		RsName:        c.RsName,
 		SocketTimeout: c.SocketTimeout,
 		DisableInsert: c.DisableInsert,
+		Debug:         c.Debug,
 		TLS:           c.TLSConf,
 	}
 }
@@ -102,6 +104,7 @@ func (c Config) GetMongoClient() (db dal.RDB, err error) {
 		ClusterMode:   c.ClusterMode,
 		RsName:        c.RsName,
 		SocketTimeout: c.SocketTimeout,
+		Debug:         c.Debug,
 		TLS:           c.TLSConf,
 	}
 	db, err = local.NewMgo(mongoConf, time.Minute)
