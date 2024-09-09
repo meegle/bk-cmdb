@@ -95,7 +95,7 @@ func NewMgo(config MongoConf, timeout time.Duration) (*Mongo, error) {
 		// 读关注
 		conOpt.SetReadConcern(readconcern.Majority()) // 指定查询应返回实例的最新数据确认为 已写入集群中的大多数成员
 		// 写关注
-		wc := writeconcern.New(writeconcern.WMajority()) // 请求确认写操作传播到大多数mongod梳理
+		wc := writeconcern.New(writeconcern.WMajority()) // 请求确认写操作传播到大多数mongod实例
 		wc = wc.WithOptions(writeconcern.WTimeout(30 * time.Second))
 		conOpt.SetWriteConcern(wc)
 	} else { // 副本集模式
