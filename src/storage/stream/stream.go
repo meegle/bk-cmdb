@@ -27,6 +27,8 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readconcern"
+	"go.mongodb.org/mongo-driver/mongo/writeconcern"
 	"go.mongodb.org/mongo-driver/x/mongo/driver/connstring"
 )
 
@@ -53,7 +55,18 @@ func NewStream(conf local.MongoConf) (Interface, error) {
 		MaxPoolSize:    &conf.MaxOpenConns,
 		MinPoolSize:    &conf.MaxIdleConns,
 		ConnectTimeout: &timeout,
-		ReplicaSet:     &conf.RsName,
+	}
+
+	// 区分建连方式
+	if conf.ClusterMode == "shard" { // 分片集群模式
+		// 读关注
+		conOpt.SetReadConcern(readconcern.Majority()) // 指定查询应返回实例的最新数据确认为 已写入集群中的大多数成员
+		// 写关注
+		wc := writeconcern.New(writeconcern.WMajority()) // 请求确认写操作传播到大多数mongod实例
+		wc = wc.WithOptions(writeconcern.WTimeout(30 * time.Second))
+		conOpt.SetWriteConcern(wc)
+	} else { // 副本集模式
+		conOpt.ReplicaSet = &conf.RsName
 	}
 	tlsConf, useTLS, err := ssl.NewTLSConfigFromConf(conf.TLS)
 	if err != nil {
@@ -99,7 +112,18 @@ func NewLoopStream(conf local.MongoConf, isMaster discovery.ServiceManageInterfa
 		MaxPoolSize:    &conf.MaxOpenConns,
 		MinPoolSize:    &conf.MaxIdleConns,
 		ConnectTimeout: &timeout,
-		ReplicaSet:     &conf.RsName,
+	}
+
+	// 区分建连方式
+	if conf.ClusterMode == "shard" { // 分片集群模式
+		// 读关注
+		conOpt.SetReadConcern(readconcern.Majority()) // 指定查询应返回实例的最新数据确认为 已写入集群中的大多数成员
+		// 写关注
+		wc := writeconcern.New(writeconcern.WMajority()) // 请求确认写操作传播到大多数mongod实例
+		wc = wc.WithOptions(writeconcern.WTimeout(30 * time.Second))
+		conOpt.SetWriteConcern(wc)
+	} else { // 副本集模式
+		conOpt.ReplicaSet = &conf.RsName
 	}
 	tlsConf, useTLS, err := ssl.NewTLSConfigFromConf(conf.TLS)
 	if nil != err {
