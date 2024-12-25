@@ -230,7 +230,7 @@ watch:
     keyFile: "$mongo_keyfile"
     caFile: "$mongo_cafile"
     insecureSkipVerify: $mongo_skipverify
-    '''
+'''
     template = FileTemplate(mongodb_file_template_str)
     result = template.substitute(**context)
     with open(output + "mongodb.yaml", 'w') as tmp_file:
@@ -248,7 +248,7 @@ watch:
         if mongo_skipverify_v:
             mongo_tls_params += "&tlsInsecure=" + mongo_skipverify_v
     context['mongo_tls_params'] = mongo_tls_params
-    
+
     monstachesoconfig_file_template_str = '''
 # mongodb settings
 mongo-url = "mongodb://$mongo_user:$mongo_pass@$mongo_host:$mongo_port/$db$mongo_tls_params"
@@ -758,9 +758,11 @@ mongodb:
   maxOpenConns: 3000
   maxIdleConns: 100
   mechanism: SCRAM-SHA-1
+  clusterMode: $cluster_mode
   rsName: $rs_name
   #mongo的socket连接的超时时间，以秒为单位，默认10s，最小5s，最大30s。
   socketTimeoutSeconds: 10
+  debug: false
   tls:
     #证书文件路径
     certFile: "$mongo_certfile"
@@ -770,7 +772,7 @@ mongodb:
     caFile: "$mongo_cafile"
     #是否跳过证书验证
     insecureSkipVerify: $mongo_skipverify
-    '''
+'''
 
     template = FileTemplate(web_file_template_str)
     loginVersion = 'opensource'
