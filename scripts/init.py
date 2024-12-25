@@ -674,10 +674,12 @@ mongodb:
   maxOpenConns: 3000
   maxIdleConns: 100
   mechanism: SCRAM-SHA-1
+  clusterMode: $cluster_mode
   rsName: $rs_name
   #mongo的socket连接的超时时间，以秒为单位，默认10s，最小5s，最大30s。
   socketTimeoutSeconds: 10
-    '''
+  debug: false
+'''
 
     template = FileTemplate(web_file_template_str)
     loginVersion = 'opensource'
