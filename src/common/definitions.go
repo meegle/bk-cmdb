@@ -1002,6 +1002,9 @@ const (
 	// FieldTypeInt the int field type
 	FieldTypeInt string = "int"
 
+	// FieldTypeIntArray the int array field type
+	FieldTypeIntArray string = "intarray"
+
 	// FieldTypeFloat the float field type
 	FieldTypeFloat string = "float"
 
