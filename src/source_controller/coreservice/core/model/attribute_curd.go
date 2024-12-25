@@ -137,7 +137,7 @@ func (m *modelAttribute) save(kit *rest.Kit, attribute metadata.Attribute) (id u
 		switch attribute.PropertyType {
 		case common.FieldTypeSingleChar, common.FieldTypeLongChar, common.FieldTypeInt, common.FieldTypeFloat,
 			common.FieldTypeEnum, common.FieldTypeDate, common.FieldTypeTime, common.FieldTypeTimeZone,
-			common.FieldTypeBool, common.FieldTypeList, common.FieldTypeIDRule:
+			common.FieldTypeBool, common.FieldTypeList, common.FieldTypeIDRule, common.FieldTypeIntArray:
 			isMultiple := false
 			attribute.IsMultiple = &isMultiple
 		case common.FieldTypeUser, common.FieldTypeOrganization, common.FieldTypeEnumQuote, common.FieldTypeEnumMulti:
@@ -149,7 +149,7 @@ func (m *modelAttribute) save(kit *rest.Kit, attribute metadata.Attribute) (id u
 	}
 	// 对于枚举，枚举多选，枚举引用字段, 默认值是放在option中的，需要将default置为nil
 	if attribute.Default != nil && (attribute.PropertyType == common.FieldTypeEnum ||
-		attribute.PropertyType == common.FieldTypeEnumMulti || attribute.PropertyType == common.FieldTypeEnumQuote) {
+		attribute.PropertyType == common.FieldTypeEnumMulti || attribute.PropertyType == common.FieldTypeEnumQuote || attribute.PropertyType == common.FieldTypeIntArray) {
 
 		attribute.Default = nil
 	}
@@ -486,6 +486,7 @@ var validAttrPropertyTypes = map[string]struct{}{
 	common.FieldTypeSingleChar:   {},
 	common.FieldTypeLongChar:     {},
 	common.FieldTypeInt:          {},
+	common.FieldTypeIntArray:     {},
 	common.FieldTypeFloat:        {},
 	common.FieldTypeEnum:         {},
 	common.FieldTypeEnumMulti:    {},
@@ -545,7 +546,7 @@ func (m *modelAttribute) checkAttributeValidity(kit *rest.Kit, attribute metadat
 	}
 
 	if attribute.Default != nil && propertyType != common.FieldTypeEnum && propertyType != common.FieldTypeEnumMulti &&
-		propertyType != common.FieldTypeEnumQuote && propertyType != common.FieldTypeIDRule {
+		propertyType != common.FieldTypeEnumQuote && propertyType != common.FieldTypeIDRule && propertyType != common.FieldTypeIntArray {
 
 		if err := m.checkAttributeDefaultValue(kit, attribute, propertyType); err != nil {
 			return err
@@ -658,8 +659,8 @@ func (m *modelAttribute) checkAttributeDefaultValue(kit *rest.Kit, attribute met
 
 	default:
 		if propertyType == common.FieldTypeEnum || propertyType == common.FieldTypeEnumMulti ||
-			propertyType == common.FieldTypeEnumQuote {
-			return fmt.Errorf("enum, enummulti, enumquote type default field is nil")
+			propertyType == common.FieldTypeEnumQuote || propertyType == common.FieldTypeIntArray {
+			return fmt.Errorf("enum, enummulti, enumquote, intarray type default field is nil")
 		}
 		return kit.CCError.Errorf(common.CCErrCommParamsIsInvalid, metadata.AttributeFieldPropertyType)
 	}
@@ -1612,7 +1613,7 @@ func (m *modelAttribute) checkUpdate(kit *rest.Kit, data mapstr.MapStr, cond uni
 	propertyType := dbAttributeArr[0].PropertyType
 	// 对于枚举，枚举多选，枚举引用字段, 默认值是放在option中的，需要将default置为nil
 	if data[metadata.AttributeFieldDefault] != nil && (propertyType == common.FieldTypeEnum ||
-		propertyType == common.FieldTypeEnumMulti || propertyType == common.FieldTypeEnumQuote) {
+		propertyType == common.FieldTypeEnumMulti || propertyType == common.FieldTypeEnumQuote || propertyType == common.FieldTypeIntArray) {
 
 		data.Remove(metadata.AttributeFieldDefault)
 	}

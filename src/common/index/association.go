@@ -76,5 +76,15 @@ var (
 			},
 			Background: true,
 		},
+		{
+			Name: common.CCLogicIndexNamePrefix + "bkObjId_bkAsstObjId_bkAsstId_bkAsstInstId",
+			Keys: bson.D{
+				{common.BKObjIDField, 1},
+				{common.BKAsstObjIDField, 1},
+				{common.BKAssetIDField, 1},
+				{common.BKAsstInstIDField, 1},
+			},
+			Background: true,
+		},
 	}
 )

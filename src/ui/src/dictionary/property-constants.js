@@ -15,6 +15,7 @@ import { t } from '@/i18n'
 export const PROPERTY_TYPES = Object.freeze({
   SINGLECHAR: 'singlechar',
   INT: 'int',
+  INTARRAY: 'intarray',
   FLOAT: 'float',
   ENUM: 'enum',
   DATE: 'date',
@@ -40,6 +41,7 @@ export const PROPERTY_TYPES = Object.freeze({
 export const PROPERTY_TYPE_NAMES = Object.freeze({
   [PROPERTY_TYPES.SINGLECHAR]: t('短字符'),
   [PROPERTY_TYPES.INT]: t('数字'),
+  [PROPERTY_TYPES.INTARRAY]: t('数字数组'),
   [PROPERTY_TYPES.FLOAT]: t('浮点'),
   [PROPERTY_TYPES.ENUM]: t('枚举'),
   [PROPERTY_TYPES.DATE]: t('日期'),
@@ -64,6 +66,10 @@ export const PROPERTY_TYPE_LIST = [
   {
     id: PROPERTY_TYPES.INT,
     name: PROPERTY_TYPE_NAMES[PROPERTY_TYPES.INT]
+  },
+  {
+    id: PROPERTY_TYPES.INTARRAY,
+    name: PROPERTY_TYPE_NAMES[PROPERTY_TYPES.INTARRAY]
   },
   {
     id: PROPERTY_TYPES.FLOAT,
@@ -126,6 +132,7 @@ export const PROPERTY_TYPE_LIST = [
 export const EDITABLE_TYPES = [
   PROPERTY_TYPES.SINGLECHAR,
   PROPERTY_TYPES.INT,
+  PROPERTY_TYPES.INTARRAY,
   PROPERTY_TYPES.FLOAT,
   PROPERTY_TYPES.ENUM,
   PROPERTY_TYPES.DATE,
@@ -144,6 +151,7 @@ export const EDITABLE_TYPES = [
 export const REQUIRED_TYPES = [
   PROPERTY_TYPES.SINGLECHAR,
   PROPERTY_TYPES.INT,
+  PROPERTY_TYPES.INTARRAY,
   PROPERTY_TYPES.FLOAT,
   PROPERTY_TYPES.DATE,
   PROPERTY_TYPES.TIME,

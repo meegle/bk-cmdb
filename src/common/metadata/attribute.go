@@ -174,6 +174,7 @@ func (attribute *Attribute) Validate(ctx context.Context, data interface{}, key 
 		common.FieldTypeSingleChar:   attribute.validChar,
 		common.FieldTypeLongChar:     attribute.validLongChar,
 		common.FieldTypeInt:          attribute.validInt,
+		common.FieldTypeIntArray:     attribute.validIntArray,
 		common.FieldTypeFloat:        attribute.validFloat,
 		common.FieldTypeEnum:         attribute.validEnum,
 		common.FieldTypeEnumMulti:    attribute.validEnumMulti,
@@ -539,6 +540,39 @@ func (attribute *Attribute) validInt(ctx context.Context, val interface{}, key s
 			Args:    []interface{}{key},
 		}
 	}
+	return errors.RawErrorInfo{}
+}
+
+// validIntArray valid object attribute that is int array type
+func (attribute *Attribute) validIntArray(ctx context.Context, val interface{}, key string) errors.RawErrorInfo {
+	rid := util.ExtractRequestIDFromContext(ctx)
+	if val == nil {
+		if attribute.IsRequired {
+			blog.Errorf("params can not be null, rid: %s", rid)
+			return errors.RawErrorInfo{
+				ErrCode: common.CCErrCommParamsNeedSet,
+				Args:    []interface{}{key},
+			}
+		}
+		return errors.RawErrorInfo{}
+	}
+
+	switch arr := val.(type) {
+	case []interface{}:
+		for _, v := range arr {
+			if !util.IsNumeric(v) {
+				blog.Errorf("params %s:item %#v not int, rid: %s", key, v, rid)
+				return errors.RawErrorInfo{
+					ErrCode: common.CCErrCommParamsNeedInt,
+					Args:    []interface{}{key},
+				}
+			}
+		}
+	default:
+		blog.Errorf("params should be type interface slice,but its type is %T, rid: %s", val, rid)
+		return errors.RawErrorInfo{ErrCode: common.CCErrCommParamsInvalid, Args: []interface{}{key}}
+	}
+
 	return errors.RawErrorInfo{}
 }
 

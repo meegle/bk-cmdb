@@ -93,7 +93,7 @@
           </bk-select>
         </div>
       </div>
-      <div class="field-detail" v-if="!['foreignkey'].includes(fieldType)">
+      <div class="field-detail" v-if="!['foreignkey', 'intarray'].includes(fieldType)">
         <!-- 添加key防止复用组件时内部状态错误 -->
         <component
           class="cmdb-form-item"
