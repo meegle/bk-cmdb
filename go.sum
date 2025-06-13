@@ -582,6 +582,8 @@ go.opentelemetry.io/contrib/instrumentation/github.com/emicklei/go-restful/otelr
 go.opentelemetry.io/contrib/instrumentation/github.com/emicklei/go-restful/otelrestful v0.44.0/go.mod h1:uq8DrRaen3suIWTpdR/JNHCGpurSvMv9D5Nr5CU5TXc=
 go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin v0.44.0 h1:vSuzwGXaJ3nm8a6JGeRc2V28qP1NB4iRTcobhU/z3Fs=
 go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin v0.44.0/go.mod h1:+H7htXVkUjPfQ45PNlcbXUmMXUr16uXDvuR+7TAGfVQ=
+go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo v0.33.0 h1:XM8+Uojy+jxM7v56u+DVFFR5jVVSNlQIwV99PB4kg9s=
+go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo v0.33.0/go.mod h1:v4XAvjK7zf0u1qpnktGXsx7CxrrhjnGMFb/fRw+4emo=
 go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.44.0 h1:KfYpVmrjI7JuToy5k8XV3nkapjWx48k4E4JOtVstzQI=
 go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.44.0/go.mod h1:SeQhzAEccGVZVEy7aH87Nh0km+utSpo1pTv6eMMop48=
 go.opentelemetry.io/contrib/propagators/b3 v1.19.0 h1:ulz44cpm6V5oAeg5Aw9HyqGFMS6XM7untlMEhD7YzzA=

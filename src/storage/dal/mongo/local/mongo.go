@@ -44,6 +44,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/writeconcern"
 	"go.mongodb.org/mongo-driver/x/bsonx"
 	"go.mongodb.org/mongo-driver/x/mongo/driver/connstring"
+	"go.opentelemetry.io/otel"
 )
 
 // Mongo TODO
@@ -124,24 +125,17 @@ func NewMgo(config MongoConf, timeout time.Duration) (*Mongo, error) {
 	}
 
 	clientOpt := options.Client().ApplyURI(config.URI)
+
+	// 日志记录
+	monitors := []*event.CommandMonitor{}
 	if config.Debug {
-		// 打印查询日志
-		var logMonitor = event.CommandMonitor{
-			Started: func(ctx context.Context, startedEvent *event.CommandStartedEvent) {
-				blog.Infof("mongo reqId:%d start on db:%s cmd:%s sql:%+v", startedEvent.RequestID, startedEvent.DatabaseName,
-					startedEvent.CommandName, startedEvent.Command)
-			},
-			Succeeded: func(ctx context.Context, succeededEvent *event.CommandSucceededEvent) {
-				blog.Infof("mongo reqId:%d exec cmd:%s success duration %d ns", succeededEvent.RequestID,
-					succeededEvent.CommandName, succeededEvent.DurationNanos)
-			},
-			Failed: func(ctx context.Context, failedEvent *event.CommandFailedEvent) {
-				blog.Infof("mongo reqId:%d exec cmd:%s failed duration %d ns", failedEvent.RequestID,
-					failedEvent.CommandName, failedEvent.DurationNanos)
-			},
-		}
-		clientOpt.SetMonitor(&logMonitor)
+		monitors = append(monitors, newCommandMonitor())
 	}
+	// 链路追踪
+	tp := otel.GetTracerProvider()
+	monitors = append(monitors, newOtelMonitor(tp))
+
+	clientOpt.SetMonitor(combineMonitors(monitors...))
 
 	client, err := mongo.NewClient(clientOpt, &conOpt)
 	if nil != err {
